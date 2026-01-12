@@ -1,0 +1,8 @@
+{
+  "modmenu.nameTranslation.rottingfood": "Rotting Food",
+  "modmenu.summaryTranslation.rottingfood": "Adds a rotting mechanic to Minecraft.",
+  "text.config.rotting-food-config.option.modDataComponentsEnabled": "Mod data components",
+  "text.config.rotting-food-config.option.showInTooltip": "Show in tooltip",
+  "text.config.rotting-food-config.option.randomiseFoodState": "Randomise starting food state",
+  "text.config.rotting-food-config.option.exclude": "Exclude"
+}

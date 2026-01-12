@@ -3,10 +3,13 @@
   "id": "rottingfood",
   "version": "${version}",
   "name": "RottingFood",
-  "description": "A mod that adds rotting to all foods in game, even to custom ones added by other mods.",
+  "description": "A fully customizable mod that adds a rotting mechanic to all foods in Minecraft. Compatible with your favorite food mods!",
   "authors": ["Wayzle"],
-  "contact": {},
-  "license": "All-Rights-Reserved",
+  "contact": {
+    "homepage": "https://modrinth.com/mod/rotting-food",
+    "sources": "https://github.com/Wayzle/rotting-food"
+  },
+  "license": "Apache-2.0",
   "icon": "assets/rottingfood/icon.png",
   "environment": "*",
   "entrypoints": {
@@ -20,6 +23,7 @@
   "depends": {
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
-    "minecraft": "${minecraft_version}"
+    "minecraft": "${minecraft_version}",
+    "owo-lib": ">=${owo_version}"
   }
 }
