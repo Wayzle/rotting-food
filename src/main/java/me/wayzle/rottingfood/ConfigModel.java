@@ -45,7 +45,7 @@ public class ConfigModel {
         exclude.add("minecraft:enchanted_golden_apple");
 
         foodStates.add(new FoodState("Fresh", 5635925, 1, "x", "x", "x"));
-        foodStates.add(new FoodState("Edible", 16777045, 3, "x*0", "x", "x"));
-        foodStates.add(new FoodState("Rotten", 16733525, -1, "x", "x", "x*5"));
+        foodStates.add(new FoodState("Edible", 16777045, 3, "x/2", "x/2", "x"));
+        foodStates.add(new FoodState("Rotten", 16733525, -1, "x*0", "x*0", "x*2"));
     }
 }
