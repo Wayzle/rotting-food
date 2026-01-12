@@ -4,6 +4,7 @@
   "package": "me.wayzle.rottingfood.mixin",
   "compatibilityLevel": "JAVA_21",
   "mixins": [
+    "ItemEntityMixin",
     "ItemMixin"
   ],
   "client": [

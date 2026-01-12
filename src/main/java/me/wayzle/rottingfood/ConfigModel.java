@@ -35,8 +35,10 @@ public class ConfigModel {
     public boolean showInTooltip = true;
     public boolean randomiseFoodState = false;
 
+    @SectionHeader("notice")
     public List<String> exclude = new ArrayList<String>();
     public List<FoodState> foodStates = new ArrayList<>();
+
 
     public ConfigModel() {
         exclude.add("minecraft:golden_apple");

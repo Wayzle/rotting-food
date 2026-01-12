@@ -4,5 +4,6 @@
   "text.config.rotting-food-config.option.modDataComponentsEnabled": "Mod data components",
   "text.config.rotting-food-config.option.showInTooltip": "Show in tooltip",
   "text.config.rotting-food-config.option.randomiseFoodState": "Randomise starting food state",
-  "text.config.rotting-food-config.option.exclude": "Exclude"
+  "text.config.rotting-food-config.option.exclude": "Exclude",
+  "text.config.rotting-food-config.section.notice": "NOTICE: Currently Rotten Food doesn't support full customizability from within Mod Menu.\n To change stages through which the food will go as it rots, please modify the config file manually."
 }

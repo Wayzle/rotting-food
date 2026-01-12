@@ -27,6 +27,7 @@ import java.util.List;
 
 import static com.mojang.text2speech.Narrator.LOGGER;
 import static me.wayzle.rottingfood.Rottingfood.CONFIG;
+import static me.wayzle.rottingfood.Rottingfood.modifyFoodComponent;
 
 @Mixin(Item.class)
 public abstract class ItemMixin {
@@ -83,22 +84,4 @@ public abstract class ItemMixin {
         }
     }
 
-    @Unique
-    private FoodComponent modifyFoodComponent(FoodComponent originalFoodComponent, ConfigModel.FoodState foodState){
-        Argument x = new Argument("x");
-        Expression enutrition = new Expression(foodState.nurtition, x);
-        Expression esaturation = new Expression(foodState.saturation, x);
-        Expression eeatSeconds = new Expression(foodState.eatSeconds, x);
-
-        x.setArgumentValue(originalFoodComponent.nutrition());
-        int nurtition = (int)Math.max(Math.round(enutrition.calculate()), 0d);
-
-        x.setArgumentValue(originalFoodComponent.saturation());
-        float saturation = (float)Math.max(esaturation.calculate(), 0d);
-
-        x.setArgumentValue(originalFoodComponent.eatSeconds());
-        float eatSeconds = (float)Math.max(eeatSeconds.calculate(), 0d);
-
-        return new FoodComponent(nurtition, saturation, originalFoodComponent.canAlwaysEat(), eatSeconds, originalFoodComponent.usingConvertsTo(), originalFoodComponent.effects());
-    }
 }
