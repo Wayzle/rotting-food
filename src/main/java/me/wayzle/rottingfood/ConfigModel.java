@@ -4,11 +4,12 @@ import io.wispforest.owo.config.annotation.*;
 
 import java.util.*;
 
-import static me.wayzle.rottingfood.Rottingfood.MOD_ID;
+import static me.wayzle.rottingfood.RottingFood.MOD_ID;
 
 @Modmenu(modId = MOD_ID)
 @Config(name = "rotting-food-config", wrapperName = "RottingFoodConfig")
 public class ConfigModel {
+
     public static class FoodState {
 
         public String tooltip = "";
@@ -17,7 +18,6 @@ public class ConfigModel {
         public String nurtition = "x";
         public String saturation = "x";
         public String eatSeconds = "x";
-//        public List<String> effects = new ArrayList<String>();
 
         public FoodState() {}
 
@@ -35,6 +35,9 @@ public class ConfigModel {
     public boolean showInTooltip = true;
     public boolean randomiseFoodState = false;
 
+    @RangeConstraint(min = 1, max=20)
+    public int maxRandomState = 2;
+
     @SectionHeader("notice")
     public List<String> exclude = new ArrayList<String>();
     public List<FoodState> foodStates = new ArrayList<>();
@@ -43,9 +46,10 @@ public class ConfigModel {
     public ConfigModel() {
         exclude.add("minecraft:golden_apple");
         exclude.add("minecraft:enchanted_golden_apple");
+        exclude.add("minecraft:golden_carrot");
 
         foodStates.add(new FoodState("Fresh", 5635925, 1, "x", "x", "x"));
         foodStates.add(new FoodState("Edible", 16777045, 3, "x/2", "x/2", "x"));
-        foodStates.add(new FoodState("Rotten", 16733525, -1, "x*0", "x*0", "x*2"));
+        foodStates.add(new FoodState("Rotten", 16733525, -1, "0", "0", "x*2"));
     }
 }

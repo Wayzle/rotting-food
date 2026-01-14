@@ -1,10 +1,9 @@
 package me.wayzle.rottingfood.mixin;
 
-import me.wayzle.rottingfood.Components;
-import me.wayzle.rottingfood.ConfigModel;
+import me.wayzle.rottingfood.components.Components;
+import me.wayzle.rottingfood.components.FoodStateComponent;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
-import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -13,8 +12,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static me.wayzle.rottingfood.Rottingfood.CONFIG;
-import static me.wayzle.rottingfood.Rottingfood.modifyFoodComponent;
+import static me.wayzle.rottingfood.RottingFood.*;
 
 @Mixin(ItemEntity.class)
 public class ItemEntityMixin {
@@ -26,11 +24,8 @@ public class ItemEntityMixin {
         FoodComponent foodComponent = (FoodComponent) stack.getItem().getComponents().get(DataComponentTypes.FOOD);
         if (foodComponent != null) {
             if(CONFIG.modDataComponentsEnabled() && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())){
-                long currentDay = world.getTime() / 24000;
-                if(!stack.getComponents().contains(Components.FOOD_TIMESTAMP) && !stack.getComponents().contains(Components.FOOD_STATE)){
-                    stack.set(Components.FOOD_TIMESTAMP, currentDay);
-                    stack.set(Components.FOOD_STATE, 0);
-                    stack.set(DataComponentTypes.FOOD, modifyFoodComponent(stack.getItem().getComponents().get(DataComponentTypes.FOOD), CONFIG.foodStates().get(0)));
+                if(!stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)){
+                    addFoodComponentsToStack(stack, world);
                 }
             }
 
@@ -45,11 +40,8 @@ public class ItemEntityMixin {
         FoodComponent foodComponent = (FoodComponent) stack.getItem().getComponents().get(DataComponentTypes.FOOD);
         if (foodComponent != null) {
             if(CONFIG.modDataComponentsEnabled() && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())){
-                long currentDay = world.getTime() / 24000;
-                if(!stack.getComponents().contains(Components.FOOD_TIMESTAMP) && !stack.getComponents().contains(Components.FOOD_STATE)){
-                    stack.set(Components.FOOD_TIMESTAMP, currentDay);
-                    stack.set(Components.FOOD_STATE, 0);
-                    stack.set(DataComponentTypes.FOOD, modifyFoodComponent(stack.getItem().getComponents().get(DataComponentTypes.FOOD), CONFIG.foodStates().get(0)));
+                if(!stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)){
+                    addFoodComponentsToStack(stack, world);
                 }
             }
 
@@ -65,11 +57,8 @@ public class ItemEntityMixin {
         FoodComponent foodComponent = (FoodComponent) stack.getItem().getComponents().get(DataComponentTypes.FOOD);
         if (foodComponent != null) {
             if(CONFIG.modDataComponentsEnabled() && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())){
-                long currentDay = entity.getWorld().getTime() / 24000;
-                if(!stack.getComponents().contains(Components.FOOD_TIMESTAMP) && !stack.getComponents().contains(Components.FOOD_STATE)){
-                    stack.set(Components.FOOD_TIMESTAMP, currentDay);
-                    stack.set(Components.FOOD_STATE, 0);
-                    stack.set(DataComponentTypes.FOOD, modifyFoodComponent(stack.getItem().getComponents().get(DataComponentTypes.FOOD), CONFIG.foodStates().get(0)));
+                if(!stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)){
+                    addFoodComponentsToStack(stack, entity.getWorld());
                 }
             }
 
