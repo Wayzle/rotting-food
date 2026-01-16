@@ -34,29 +34,33 @@ public abstract class ItemMixin {
             at = @At("HEAD")
     )
     public void rottenfood$rottingFoodTick(ItemStack stack, World world, Entity entity, int slot, boolean selected, CallbackInfo ci) {
-        FoodComponent foodComponent = (FoodComponent) this.getComponents().get(DataComponentTypes.FOOD);
-        if (foodComponent != null && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())) {
-            long currentDay = world.getTime() / 24000;
-            FoodStateComponent foodStateComponent = stack.get(Components.FOOD_STATE_COMPONENT);
+        if (!world.isClient()) {
+            FoodComponent foodComponent = (FoodComponent) this.getComponents().get(DataComponentTypes.FOOD);
+            if (foodComponent != null && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())) {
+                long currentDay = world.getTime() / 24000;
+                FoodStateComponent foodStateComponent = stack.getComponents().get(Components.FOOD_STATE_COMPONENT);
 
-            if(foodStateComponent != null){
-                if(CONFIG.modDataComponentsEnabled()){
-                    int currentStateID = foodStateComponent.state();
-                    long difference = currentDay - foodStateComponent.timestamp();
-                    ConfigModel.FoodState currentState = CONFIG.foodStates().get(currentStateID);
+                if(foodStateComponent != null){
+                    if(CONFIG.modDataComponentsEnabled()){
+                        int currentStateID = foodStateComponent.state();
+                        long difference = currentDay - foodStateComponent.timestamp();
+                        ConfigModel.FoodState currentState = CONFIG.foodStates().get(currentStateID);
 
-                    if(CONFIG.foodStates().size() > currentStateID + 1 && difference >= currentState.duration){
-                        stack.set(Components.FOOD_STATE_COMPONENT, new FoodStateComponent(foodStateComponent.timestamp() + currentState.duration, currentStateID + 1));
-                        stack.set(DataComponentTypes.FOOD, modifyFoodComponent(foodComponent, currentStateID + 1));
+                        if(CONFIG.foodStates().size() > currentStateID + 1 && difference >= currentState.duration){
+                            stack.set(Components.FOOD_STATE_COMPONENT, new FoodStateComponent(foodStateComponent.timestamp() + currentState.duration, currentStateID + 1));
+                            stack.set(DataComponentTypes.FOOD, modifyFoodComponent(foodComponent, currentStateID + 1));
+                        }
+                    }
+                    else {
+                        stack.remove(Components.FOOD_STATE_COMPONENT);
+                        stack.set(DataComponentTypes.FOOD, this.getComponents().get(DataComponentTypes.FOOD));
                     }
                 }
                 else {
-                    stack.remove(Components.FOOD_STATE_COMPONENT);
-                    stack.set(DataComponentTypes.FOOD, this.getComponents().get(DataComponentTypes.FOOD));
+                    if(CONFIG.modDataComponentsEnabled()){
+                        addFoodComponentsToStack(stack, world);
+                    }
                 }
-            }
-            else {
-                addFoodComponentsToStack(stack, world);
             }
         }
     }

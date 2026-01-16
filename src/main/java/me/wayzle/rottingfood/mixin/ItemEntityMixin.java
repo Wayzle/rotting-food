@@ -21,14 +21,16 @@ public class ItemEntityMixin {
             at = @At("TAIL")
     )
     public void rottenfood$componentInit(World world, double x, double y, double z, ItemStack stack, CallbackInfo ci){
-        FoodComponent foodComponent = (FoodComponent) stack.getItem().getComponents().get(DataComponentTypes.FOOD);
-        if (foodComponent != null) {
-            if(CONFIG.modDataComponentsEnabled() && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())){
-                if(!stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)){
-                    addFoodComponentsToStack(stack, world);
+        if(CONFIG.preventFoodFarms() && !world.isClient()){
+            FoodComponent foodComponent = (FoodComponent) stack.getItem().getComponents().get(DataComponentTypes.FOOD);
+            if (foodComponent != null) {
+                if(CONFIG.modDataComponentsEnabled() && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())){
+                    if(!stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)){
+                        addFoodComponentsToStack(stack, world);
+                    }
                 }
-            }
 
+            }
         }
     }
 
@@ -37,14 +39,16 @@ public class ItemEntityMixin {
             at = @At("TAIL")
     )
     public void rottenfood$componentInit(World world, double x, double y, double z, ItemStack stack, double velocityX, double velocityY, double velocityZ, CallbackInfo ci){
-        FoodComponent foodComponent = (FoodComponent) stack.getItem().getComponents().get(DataComponentTypes.FOOD);
-        if (foodComponent != null) {
-            if(CONFIG.modDataComponentsEnabled() && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())){
-                if(!stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)){
-                    addFoodComponentsToStack(stack, world);
+        if(CONFIG.preventFoodFarms() && !world.isClient()) {
+            FoodComponent foodComponent = (FoodComponent) stack.getItem().getComponents().get(DataComponentTypes.FOOD);
+            if (foodComponent != null) {
+                if (CONFIG.modDataComponentsEnabled() && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())) {
+                    if (!stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)) {
+                        addFoodComponentsToStack(stack, world);
+                    }
                 }
-            }
 
+            }
         }
     }
 
@@ -53,15 +57,17 @@ public class ItemEntityMixin {
             at = @At("TAIL")
     )
     private void rottenfood$componentInit(ItemEntity entity, CallbackInfo ci){
-        ItemStack stack = entity.getStack();
-        FoodComponent foodComponent = (FoodComponent) stack.getItem().getComponents().get(DataComponentTypes.FOOD);
-        if (foodComponent != null) {
-            if(CONFIG.modDataComponentsEnabled() && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())){
-                if(!stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)){
-                    addFoodComponentsToStack(stack, entity.getWorld());
+        if(CONFIG.preventFoodFarms() && !entity.getWorld().isClient()) {
+            ItemStack stack = entity.getStack();
+            FoodComponent foodComponent = (FoodComponent) stack.getItem().getComponents().get(DataComponentTypes.FOOD);
+            if (foodComponent != null) {
+                if (CONFIG.modDataComponentsEnabled() && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())) {
+                    if (!stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)) {
+                        addFoodComponentsToStack(stack, entity.getWorld());
+                    }
                 }
-            }
 
+            }
         }
     }
 

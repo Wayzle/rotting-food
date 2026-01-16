@@ -5,7 +5,13 @@ import me.wayzle.rottingfood.components.FoodStateComponent;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
+import net.minecraft.entity.effect.StatusEffect;
+import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
+import net.minecraft.network.packet.CustomPayload;
+import net.minecraft.registry.Registries;
+import net.minecraft.registry.entry.RegistryEntry;
+import net.minecraft.util.Identifier;
 import net.minecraft.world.World;
 import org.mariuszgromada.math.mxparser.Argument;
 import org.mariuszgromada.math.mxparser.Expression;
@@ -24,20 +30,24 @@ public class RottingFood implements ModInitializer {
     public static final String MOD_ID = "rottingfood";
     public static final Logger LOGGER = LoggerFactory.getLogger(MOD_ID);
     public static final RottingFoodConfig CONFIG = RottingFoodConfig.createAndLoad();
-    public static final Argument argumentX = new Argument("x");
-    public static final List<List<Expression>> expressions = new ArrayList<>();
+    public static final Argument ARGUMENT_X = new Argument("x");
+    public static final List<List<Expression>> LOADED_EXPRESSIONS = new ArrayList<>();
+    public static final List<List<FoodComponent.StatusEffectEntry>> LOADED_EFFECTS = new ArrayList<>();
 
     public static FoodComponent modifyFoodComponent(FoodComponent originalFoodComponent, int foodStateIndex){
-        argumentX.setArgumentValue(originalFoodComponent.nutrition());
-        int nurtition = (int)Math.max(Math.round(expressions.get(foodStateIndex).get(0).calculate()), 0d);
+        ARGUMENT_X.setArgumentValue(originalFoodComponent.nutrition());
+        int nurtition = (int)Math.max(Math.round(LOADED_EXPRESSIONS.get(foodStateIndex).get(0).calculate()), 0d);
 
-        argumentX.setArgumentValue(originalFoodComponent.saturation());
-        float saturation = (float)Math.max(expressions.get(foodStateIndex).get(1).calculate(), 0d);
+        ARGUMENT_X.setArgumentValue(originalFoodComponent.saturation());
+        float saturation = (float)Math.max(LOADED_EXPRESSIONS.get(foodStateIndex).get(1).calculate(), 0d);
 
-        argumentX.setArgumentValue(originalFoodComponent.eatSeconds());
-        float eatSeconds = (float)Math.max(expressions.get(foodStateIndex).get(2).calculate(), 0d);
+        ARGUMENT_X.setArgumentValue(originalFoodComponent.eatSeconds());
+        float eatSeconds = (float)Math.max(LOADED_EXPRESSIONS.get(foodStateIndex).get(2).calculate(), 0d);
 
-        return new FoodComponent(nurtition, saturation, originalFoodComponent.canAlwaysEat(), eatSeconds, originalFoodComponent.usingConvertsTo(), originalFoodComponent.effects());
+        List<FoodComponent.StatusEffectEntry> stateEffects = new ArrayList<>(originalFoodComponent.effects());
+        stateEffects.addAll(LOADED_EFFECTS.get(foodStateIndex));
+
+        return new FoodComponent(nurtition, saturation, originalFoodComponent.canAlwaysEat(), eatSeconds, originalFoodComponent.usingConvertsTo(), stateEffects);
     }
 
     public static void addFoodComponentsToStack(ItemStack stack, World world){
@@ -45,11 +55,24 @@ public class RottingFood implements ModInitializer {
         stack.set(DataComponentTypes.FOOD, modifyFoodComponent(stack.getItem().getComponents().get(DataComponentTypes.FOOD), stack.get(Components.FOOD_STATE_COMPONENT).state()));
     }
 
-    private void initExpressions(){
+    private void loadExpressions(){
         for(int i = 0; i < CONFIG.foodStates().size(); i++){
-            expressions.add(Arrays.asList(new Expression(CONFIG.foodStates().get(i).nurtition, argumentX), new Expression(CONFIG.foodStates().get(i).saturation, argumentX), new Expression(CONFIG.foodStates().get(i).eatSeconds, argumentX)));
+            LOADED_EXPRESSIONS.add(Arrays.asList(new Expression(CONFIG.foodStates().get(i).nurtition, ARGUMENT_X), new Expression(CONFIG.foodStates().get(i).saturation, ARGUMENT_X), new Expression(CONFIG.foodStates().get(i).eatSeconds, ARGUMENT_X)));
         }
 
+    }
+
+    private void loadEffects(){
+        for(int i = 0; i < CONFIG.foodStates().size(); i++){
+            LOADED_EFFECTS.add(new ArrayList<>());
+            for(int j = 0; j < CONFIG.foodStates().get(i).effects.size(); j++){
+                ConfigModel.EffectInstance instance = CONFIG.foodStates().get(i).effects.get(j);
+                RegistryEntry<StatusEffect> effectRegistry = Registries.STATUS_EFFECT.getEntry(Registries.STATUS_EFFECT.get(Identifier.of(instance.id)));
+                StatusEffectInstance statusEffectInstance = new StatusEffectInstance(effectRegistry, instance.duration, instance.amplifier, instance.ambient, instance.showParticles, instance.showIcon);
+                FoodComponent.StatusEffectEntry statusEffectEntry = new FoodComponent.StatusEffectEntry(statusEffectInstance, instance.probability);
+                LOADED_EFFECTS.get(i).add(statusEffectEntry);
+            }
+        }
     }
 
     @Override
@@ -61,6 +84,7 @@ public class RottingFood implements ModInitializer {
         mXparser.disableCanonicalRounding();
         mXparser.disableAlmostIntRounding();
 
-        initExpressions();
+        loadExpressions();
+        loadEffects();
     }
 }
