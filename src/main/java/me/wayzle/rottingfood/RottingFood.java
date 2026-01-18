@@ -4,10 +4,13 @@ import me.wayzle.rottingfood.components.Components;
 import me.wayzle.rottingfood.components.FoodStateComponent;
 import net.fabricmc.api.ModInitializer;
 import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.ConsumableComponent;
 import net.minecraft.component.type.FoodComponent;
 import net.minecraft.entity.effect.StatusEffect;
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.consume.ApplyEffectsConsumeEffect;
+import net.minecraft.item.consume.ConsumeEffect;
 import net.minecraft.network.packet.CustomPayload;
 import net.minecraft.registry.Registries;
 import net.minecraft.registry.entry.RegistryEntry;
@@ -32,7 +35,7 @@ public class RottingFood implements ModInitializer {
     public static final RottingFoodConfig CONFIG = RottingFoodConfig.createAndLoad();
     public static final Argument ARGUMENT_X = new Argument("x");
     public static final List<List<Expression>> LOADED_EXPRESSIONS = new ArrayList<>();
-    public static final List<List<FoodComponent.StatusEffectEntry>> LOADED_EFFECTS = new ArrayList<>();
+    public static final List<List<ConsumeEffect>> LOADED_EFFECTS = new ArrayList<>();
 
     public static FoodComponent modifyFoodComponent(FoodComponent originalFoodComponent, int foodStateIndex){
         ARGUMENT_X.setArgumentValue(originalFoodComponent.nutrition());
@@ -41,18 +44,23 @@ public class RottingFood implements ModInitializer {
         ARGUMENT_X.setArgumentValue(originalFoodComponent.saturation());
         float saturation = (float)Math.max(LOADED_EXPRESSIONS.get(foodStateIndex).get(1).calculate(), 0d);
 
-        ARGUMENT_X.setArgumentValue(originalFoodComponent.eatSeconds());
-        float eatSeconds = (float)Math.max(LOADED_EXPRESSIONS.get(foodStateIndex).get(2).calculate(), 0d);
+        return new FoodComponent(nurtition, saturation, originalFoodComponent.canAlwaysEat());
+    }
 
-        List<FoodComponent.StatusEffectEntry> stateEffects = new ArrayList<>(originalFoodComponent.effects());
+    public static ConsumableComponent modifyConsumableComponent(ConsumableComponent originalConsumableComponent, int foodStateIndex){
+        ARGUMENT_X.setArgumentValue(originalConsumableComponent.consumeSeconds());
+        float consumeSeconds = (float)Math.max(LOADED_EXPRESSIONS.get(foodStateIndex).get(2).calculate(), 0d);
+
+        List<ConsumeEffect> stateEffects = new ArrayList<>(originalConsumableComponent.onConsumeEffects());
         stateEffects.addAll(LOADED_EFFECTS.get(foodStateIndex));
 
-        return new FoodComponent(nurtition, saturation, originalFoodComponent.canAlwaysEat(), eatSeconds, originalFoodComponent.usingConvertsTo(), stateEffects);
+        return new ConsumableComponent(consumeSeconds, originalConsumableComponent.useAction(), originalConsumableComponent.sound(), originalConsumableComponent.hasConsumeParticles(), stateEffects);
     }
 
     public static void addFoodComponentsToStack(ItemStack stack, World world){
         stack.set(Components.FOOD_STATE_COMPONENT, new FoodStateComponent(world.getTime() / 24000, CONFIG.randomiseFoodState() ? (int)(Math.random() * Math.min(CONFIG.maxRandomState(), CONFIG.foodStates().size())) : 0));
         stack.set(DataComponentTypes.FOOD, modifyFoodComponent(stack.getItem().getComponents().get(DataComponentTypes.FOOD), stack.get(Components.FOOD_STATE_COMPONENT).state()));
+        stack.set(DataComponentTypes.CONSUMABLE, modifyConsumableComponent(stack.getItem().getComponents().get(DataComponentTypes.CONSUMABLE), stack.get(Components.FOOD_STATE_COMPONENT).state()));
     }
 
     private void loadExpressions(){
@@ -69,8 +77,8 @@ public class RottingFood implements ModInitializer {
                 ConfigModel.EffectInstance instance = CONFIG.foodStates().get(i).effects.get(j);
                 RegistryEntry<StatusEffect> effectRegistry = Registries.STATUS_EFFECT.getEntry(Registries.STATUS_EFFECT.get(Identifier.of(instance.id)));
                 StatusEffectInstance statusEffectInstance = new StatusEffectInstance(effectRegistry, instance.duration, instance.amplifier, instance.ambient, instance.showParticles, instance.showIcon);
-                FoodComponent.StatusEffectEntry statusEffectEntry = new FoodComponent.StatusEffectEntry(statusEffectInstance, instance.probability);
-                LOADED_EFFECTS.get(i).add(statusEffectEntry);
+                ConsumeEffect consumeEffect = new ApplyEffectsConsumeEffect(statusEffectInstance, instance.probability);
+                LOADED_EFFECTS.get(i).add(consumeEffect);
             }
         }
     }

@@ -49,6 +49,7 @@ public abstract class ItemMixin {
                         if(CONFIG.foodStates().size() > currentStateID + 1 && difference >= currentState.duration){
                             stack.set(Components.FOOD_STATE_COMPONENT, new FoodStateComponent(foodStateComponent.timestamp() + currentState.duration, currentStateID + 1));
                             stack.set(DataComponentTypes.FOOD, modifyFoodComponent(foodComponent, currentStateID + 1));
+                            stack.set(DataComponentTypes.CONSUMABLE, modifyConsumableComponent(this.getComponents().get(DataComponentTypes.CONSUMABLE), currentStateID + 1));
                         }
                     }
                     else {
