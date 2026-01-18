@@ -4,6 +4,7 @@ import me.wayzle.rottingfood.components.Components;
 import me.wayzle.rottingfood.components.FoodStateComponent;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
+import net.minecraft.entity.EntityType;
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.world.World;
@@ -51,25 +52,25 @@ public class ItemEntityMixin {
             }
         }
     }
-
-    @Inject(
-            method = "<init>(Lnet/minecraft/entity/ItemEntity;)V",
-            at = @At("TAIL")
-    )
-    private void rottenfood$componentInit(ItemEntity entity, CallbackInfo ci){
-        if(CONFIG.preventFoodFarms() && !entity.getWorld().isClient()) {
-            ItemStack stack = entity.getStack();
-            FoodComponent foodComponent = (FoodComponent) stack.getItem().getComponents().get(DataComponentTypes.FOOD);
-            if (foodComponent != null) {
-                if (CONFIG.modDataComponentsEnabled() && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())) {
-                    if (!stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)) {
-                        addFoodComponentsToStack(stack, entity.getWorld());
-                    }
-                }
-
-            }
-        }
-    }
+//
+//    @Inject(
+//            method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V",
+//            at = @At("TAIL")
+//    )
+//    private void rottenfood$componentInit(EntityType entityType, World world, CallbackInfo ci){
+//        if(CONFIG.preventFoodFarms() && !world.isClient()) {
+//            ItemStack stack = entity.getStack();
+//            FoodComponent foodComponent = (FoodComponent) stack.getItem().getComponents().get(DataComponentTypes.FOOD);
+//            if (foodComponent != null) {
+//                if (CONFIG.modDataComponentsEnabled() && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())) {
+//                    if (!stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)) {
+//                        addFoodComponentsToStack(stack, entity.getWorld());
+//                    }
+//                }
+//
+//            }
+//        }
+//    }
 
 //    @Inject(
 //            method = "<init>(Lnet/minecraft/entity/EntityType;Lnet/minecraft/world/World;)V",
