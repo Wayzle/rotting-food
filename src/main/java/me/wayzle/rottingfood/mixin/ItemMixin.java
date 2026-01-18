@@ -6,10 +6,13 @@ import me.wayzle.rottingfood.components.FoodStateComponent;
 import net.minecraft.component.ComponentMap;
 import net.minecraft.component.DataComponentTypes;
 import net.minecraft.component.type.FoodComponent;
+import net.minecraft.component.type.TooltipDisplayComponent;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.item.tooltip.TooltipType;
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
 import net.minecraft.world.World;
@@ -20,6 +23,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import static me.wayzle.rottingfood.RottingFood.*;
 
@@ -33,7 +37,7 @@ public abstract class ItemMixin {
             method = "inventoryTick",
             at = @At("HEAD")
     )
-    public void rottenfood$rottingFoodTick(ItemStack stack, World world, Entity entity, int slot, boolean selected, CallbackInfo ci) {
+    public void rottenfood$rottingFoodTick(ItemStack stack, ServerWorld world, Entity entity, EquipmentSlot slot, CallbackInfo ci) {
         if (!world.isClient()) {
             FoodComponent foodComponent = (FoodComponent) this.getComponents().get(DataComponentTypes.FOOD);
             if (foodComponent != null && !CONFIG.exclude().contains(stack.getRegistryEntry().getIdAsString())) {
@@ -67,12 +71,12 @@ public abstract class ItemMixin {
     }
 
     @Inject(method = "appendTooltip", at = @At("TAIL"))
-    private void rottenfood$afterAppendTooltip(ItemStack stack, Item.TooltipContext context, List<Text> tooltip, TooltipType type, CallbackInfo ci) {
+    private void rottenfood$afterAppendTooltip(ItemStack stack, Item.TooltipContext context, TooltipDisplayComponent displayComponent, Consumer<Text> textConsumer, TooltipType type, CallbackInfo ci) {
         if(CONFIG.showInTooltip() && CONFIG.modDataComponentsEnabled()){
             if (stack.getComponents().contains(Components.FOOD_STATE_COMPONENT)) {
                 ConfigModel.FoodState currentState = CONFIG.foodStates().get(stack.get(Components.FOOD_STATE_COMPONENT).state());
 
-                tooltip.add(Text.literal(currentState.tooltip).setStyle(Style.EMPTY.withColor(currentState.color)));
+                textConsumer.accept(Text.literal(currentState.tooltip).setStyle(Style.EMPTY.withColor(currentState.color)));
             }
         }
     }
