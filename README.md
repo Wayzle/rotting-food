@@ -60,7 +60,7 @@ This is the default config:
 }
 ```
 
-Here are a thigs you should know before tampering with the config:
+Here are a things you should know before tampering with the config:
 - All Food Stages must be in order. The highest one comes first.
 - Values for nutrition, saturation, eatSeconds are essentially equations, where x is the original value of the given item. They can be anything, ranging from "(x / 2) + 1" to a plain number like "2". Mark that x value is not affected by the previous stage as it is the original value.
 - Duration is measured in world days(Which means even if you do /time set [insert some crazy number] all your food won't immediately rot)
@@ -73,3 +73,7 @@ Here are a thigs you should know before tampering with the config:
 Truthfully i just wanted to make my friends to suffer. And i thought maybe someone might have a simillar desire or might add this to his hardcore world...
 
 As always, any mistakes are my own.
+
+![Static Badge](https://img.shields.io/badge/Modrinth-f?logo=modrinth&color=green&link=https%3A%2F%2Fmodrinth.com%2Fmod%2Frotting-food)
+![Static Badge](https://img.shields.io/badge/CurseForge-f?logo=curseforge&color=orange&link=https%3A%2F%2Fwww.curseforge.com%2Fminecraft%2Fmc-mods%2Frotting-food)
+![Static Badge](https://img.shields.io/badge/Mod%20Loaders-Fabric-orange?color=blue&link=https%3A%2F%2Fwww.curseforge.com%2Fminecraft%2Fmc-mods%2Frotting-food)
